@@ -1,13 +1,16 @@
-import React, { use } from 'react';
+import { useReducer } from 'react';
 
-class useInput extends Component {
-    render() {
-        return (
-            <div>
-                
-            </div>
-        );
-    }
+function reducer(state,action){
+    return {
+        ...state,
+        [action.name]:action.value
+    };
 }
 
-export default useInput;
+export default function useInputs(initialForm){
+    const [state,dispatch] = useReducer(reducer, initialForm);
+    const onChange = e => {
+        dispatch(e.target);
+    }
+    return [state,onChange];
+};
