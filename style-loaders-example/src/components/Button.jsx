@@ -1,7 +1,5 @@
 import React from 'react';
-import styles from './Button.module.scss';
-import classNames from 'classnames/bind';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 const StyledButton = styled.button`
     background : transparent;
@@ -11,6 +9,12 @@ const StyledButton = styled.button`
     margin: 0 1em;
     padding: 0.25em 1em;
     font-size: 20px;
+
+    ${props => props.primary && 
+        css`
+            background: palevioletred;
+            color: white;
+        `};
 `
 
 class Button extends React.Component {
