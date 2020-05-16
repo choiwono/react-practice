@@ -1,34 +1,57 @@
-import React, { useEffect, createRef } from 'react';
+import React, { useEffect, createRef, useState } from 'react';
 import { Row, Col } from 'antd';
 import { Button, Input, message } from 'antd';
 import styles from './Signin.module.css';
+import axios from 'axios'
+import { withRouter } from 'react-router-dom';
 
-class Signin extends React.Component {
-state = {
-    emailValue : '',
-};
+const Signin = () => {
 
-emailRef = createRef();
-passwordRef = createRef();
+    const emailRef = createRef();
+    const passwordRef = createRef();
 
-click = () => {
-    const emailValue = this.emailRef.current.state.value;
-    const passwordValue = this.passwordRef.current.state.value;
-    console.log("clicked", this.state.emailValue, passwordValue);
-}
+    async function click() {
+        const email = this.emailRef.current.state.value;
+        const password = this.passwordRef.current.state.value;
 
-changeEmail = (e) => {
-    this.setState({
-        emailValue : e.target.value,
-    });
-}
+        const [loading, setLoading] = useState(false);
 
-onFocus = (ref) => {
-    ref.current.focus();
-    //this.passwordInput.current.focus();
-}
+        setLoading(true)
+        try {
+            await this.sleep(3000)
+            let response = await axios.post('https://api.marktube.tv/v1/me', {
+                email,
+                password,
+            });
+            setLoading(false)
 
-render() {
+            localStorage.setItem('token', response.data.token);
+            this.props.history.push('/');
+        
+        } catch(error) {
+            setLoading(false)
+            message.error('로그인에 실패함');
+        }
+    }
+
+    changeEmail = (e) => {
+        this.setState({
+            emailValue : e.target.value,
+        });
+    }
+
+    function onFocus(ref){
+        ref.current.focus();
+    }
+
+    function sleep(ms){
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, ms)
+        });
+    }
+
     return (
         <form>
         <Row align="middle" className={styles.signin_row}>
@@ -79,7 +102,7 @@ render() {
                 <div className={styles.button_area}>
                     <Button
                     size="large"
-                    loading={false}
+                    loading={this.state.loading}
                     onClick={this.click}
                     className={styles.button}
                     >
@@ -92,9 +115,6 @@ render() {
         </Row>
     </form>
     )
-  };
-
-  //function click() {}
 };
 
-export default Signin;
+export default withRouter(Signin);
